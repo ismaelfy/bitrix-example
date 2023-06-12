@@ -16,3 +16,7 @@ function CerrarSesionesAnteriores(&$arParams)
     CPullStack::CloseByChannel('my_channel', $userId, $sessionId);
 }
 
+
+
+//2  Evento de inicio de sesión
+setcookie('session_id', session_id(), time() + 86400, '/');
