@@ -183,6 +183,95 @@ class MyComponent extends \CBitrixComponent
 
         return $filteredData;
     }
+
+
 }
 
+
+// read with format 
+
+require 'PHPExcel/Classes/PHPExcel.php';
+
+function leer_archivo_excel($nombre_archivo) {
+    $objPHPExcel = PHPExcel_IOFactory::load($nombre_archivo);
+    $objPHPExcel->setActiveSheetIndex(0);
+    $worksheet = $objPHPExcel->getActiveSheet();
+    
+    $datos_formateados = array();
+    
+    foreach ($worksheet->getRowIterator() as $row) {
+        $datos_fila = array();
+        $cellIterator = $row->getCellIterator();
+        $cellIterator->setIterateOnlyExistingCells(FALSE);
+        
+        foreach ($cellIterator as $cell) {
+            $valor_celda = $cell->getValue();
+            $formato_celda = $cell->getStyle()->getNumberFormat()->getFormatCode();
+            
+            if (strpos($formato_celda, 'yyyy') !== false) {
+                // Formato de fecha
+                $valor_celda = PHPExcel_Style_NumberFormat::toFormattedString($valor_celda, 'Y-m-d');
+            } elseif (strpos($formato_celda, '0.00') !== false) {
+                // Formato de número
+                $valor_celda = number_format($valor_celda, 2, '.', ',');
+            } elseif (strpos($formato_celda, '$') !== false) {
+                // Formato de moneda
+                $valor_celda = str_replace('$', '', $valor_celda);
+                $valor_celda = number_format($valor_celda, 2, '.', ',');
+            }
+            
+            $datos_fila[] = $valor_celda;
+        }
+        
+        $datos_formateados[] = $datos_fila;
+    }
+    
+    return $datos_formateados;
+}
+
+// Ejemplo de uso
+
+require 'PHPExcel/Classes/PHPExcel.php';
+
+function leer_archivo_excel($nombre_archivo) {
+    $objPHPExcel = PHPExcel_IOFactory::load($nombre_archivo);
+    $objPHPExcel->setActiveSheetIndex(0);
+    $worksheet = $objPHPExcel->getActiveSheet();
+    
+    $datos_formateados = array();
+    
+    foreach ($worksheet->getRowIterator() as $row) {
+        $datos_fila = array();
+        $cellIterator = $row->getCellIterator();
+        $cellIterator->setIterateOnlyExistingCells(FALSE);
+        
+        foreach ($cellIterator as $cell) {
+            $valor_celda = $cell->getValue();
+            $formato_celda = $cell->getStyle()->getNumberFormat()->getFormatCode();
+            
+            if (strpos($formato_celda, 'yyyy') !== false) {
+                // Formato de fecha
+                $valor_celda = PHPExcel_Style_NumberFormat::toFormattedString($valor_celda, 'Y-m-d');
+            } elseif (strpos($formato_celda, '0.00') !== false) {
+                // Formato de número
+                $valor_celda = number_format($valor_celda, 2, '.', ',');
+            } elseif (strpos($formato_celda, '$') !== false) {
+                // Formato de moneda
+                $valor_celda = str_replace('$', '', $valor_celda);
+                $valor_celda = number_format($valor_celda, 2, '.', ',');
+            }
+            
+            $datos_fila[] = $valor_celda;
+        }
+        
+        $datos_formateados[] = $datos_fila;
+    }
+    
+    return $datos_formateados;
+}
+
+// Ejemplo de uso
+$archivo = 'ruta/al/archivo.xlsx';
+$datos = leer_archivo_excel($archivo);
+print_r($datos);
 
