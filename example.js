@@ -32,3 +32,70 @@ function getCookie(name) {
   }
   return null;
 }
+
+
+
+
+
+let field = {
+  items: [],
+
+  add: function(key, value) {
+    this.items.push({ key: key, value: value });
+    this.updateSortable();
+  },
+
+  remove: function(key) {
+    this.items = this.items.filter(item => item.key !== key);
+    this.updateSortable();
+  },
+
+  get: function(key) {
+    return this.items.find(item => item.key === key);
+  },
+
+  all: function() {
+    return this.items;
+  },
+
+  updateSortable: function() {
+    const list = document.getElementById('sortable-list');
+    list.innerHTML = '';
+    this.items.forEach(item => {
+      const li = document.createElement('li');
+      li.innerText = `${item.key}: ${item.value}`;
+      list.appendChild(li);
+    });
+
+    if (this.sortable) {
+      this.sortable.destroy();
+    }
+
+    this.sortable = new Sortable(list, {
+      animation: 150,
+      ghostClass: 'sortable-ghost',
+      onSort: function(evt) {
+        const fromIndex = evt.oldIndex;
+        const toIndex = evt.newIndex;
+
+        const movedItem = field.items.splice(fromIndex, 1)[0];
+        field.items.splice(toIndex, 0, movedItem);
+      }
+    });
+  }
+};
+
+// Ejemplo de uso
+field.add("nombre", "John Doe");
+field.add("edad", 30);
+
+// Agrega un contenedor HTML para la lista ordenable
+const sortableContainer = document.createElement('ul');
+sortableContainer.id = 'sortable-list';
+document.body.appendChild(sortableContainer);
+
+// Actualiza la lista ordenable
+field.updateSortable();
+
+
+          
